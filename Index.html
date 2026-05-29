@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🌻 Caja de Cumpleaños | Girasoles + Carta con Foto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #faeedf 0%, #f5e4cf 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Georgia', 'Times New Roman', serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;  /* PERMITE DESPLAZAR */
+        }
+
+        /* Fondo con textura romántica */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(200, 100, 80, 0.06) 2px, transparent 2px);
+            background-size: 45px 45px;
+            pointer-events: none;
+        }
+
+        .birthday-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 750px;
+            z-index: 2;
+            padding-bottom: 40px;  /* Espacio inferior para scroll */
+        }
+
+        /* ========= CAJA DE REGALO (IMAGEN PNG) ========= */
+        .gift-box {
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), filter 0.3s;
+            filter: drop-shadow(0 35px 30px rgba(0, 0, 0, 0.35));
+            z-index: 10;
+            transform-origin: center;
+        }
+        .gift-box:hover {
+            transform: translateY(-12px) scale(1.03);
+            filter: drop-shadow(0 45px 35px rgba(0, 0, 0, 0.4));
+        }
+        .gift-box:active {
+            transform: translateY(4px) scale(0.99);
+        }
+
+        .gift-img {
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .click-hint {
+            margin-top: 28px;
+            font-size: 1.15rem;
+            background: rgba(255, 248, 235, 0.96);
+            backdrop-filter: blur(8px);
+            padding: 12px 28px;
+            border-radius: 60px;
+            color: #9b4e2a;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(220, 150, 90, 0.7);
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        /* ========= ÁREA DE SORPRESA (RAMO DE GIRASOLES PNG) ========= */
+        .surprise-area {
+            margin-top: 45px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.7s cubic-bezier(0.34, 1.2, 0.64, 1);
+            opacity: 0;
+            transform: translateY(50px) scale(0.92);
+            pointer-events: none;
+        }
+
+        .surprise-area.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* === RAMO DE GIRASOLES (IMAGEN PNG ÚNICA) === */
+        .sunflowers-bouquet {
+            background: linear-gradient(155deg, #ebddbc, #ddceaa);
+            border-radius: 160px 160px 90px 90px;
+            padding: 45px 35px 40px 35px;
+            box-shadow: 0 35px 45px -18px rgba(0, 0, 0, 0.45), inset 0 1px 12px rgba(255, 250, 220, 0.9);
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 10px solid #a87a4a;
+            background-image: radial-gradient(circle at 30% 40%, rgba(230, 200, 130, 0.5) 2%, transparent 2.5%);
+            background-size: 32px 32px;
+        }
+
+        .sunflowers-bouquet::before {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 12%;
+            width: 76%;
+            height: 24px;
+            background: #b08050;
+            border-radius: 40px;
+            filter: blur(8px);
+            opacity: 0.55;
+            z-index: -1;
+        }
+
+        /* Imagen del ramo de girasoles */
+        .sunflower-img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            display: block;
+            filter: drop-shadow(6px 14px 16px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s ease;
+            animation: floatSunflower 4s infinite ease-in-out;
+        }
+        
+        .sunflower-img:hover {
+            transform: scale(1.02);
+            filter: drop-shadow(8px 18px 20px rgba(0, 0, 0, 0.4));
+        }
+
+        @keyframes floatSunflower {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+
+        /* Botón para abrir la carta */
+        .open-letter-btn {
+            margin-top: 28px;
+            background: linear-gradient(135deg, #ffe8cf, #ffdeb5);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 80px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #9b4a22;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transition: 0.2s;
+            font-family: 'Georgia', serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(4px);
+        }
+        .open-letter-btn:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, #ffe2bf, #ffd4a4);
+            box-shadow: 0 16px 28px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ========= MODAL / VENTANA APARTE (CARTA CON FOTO) ========= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .letter-modal {
+            background: #fffef7;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 40px;
+            box-shadow: 0 50px 80px rgba(0, 0, 0, 0.5);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            transform: scale(0.94);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            overflow: hidden;
+            border: 1px solid #fbebc0;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.active .letter-modal {
+            transform: scale(1);
+        }
+        .modal-header {
+            background: #f9edda;
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0e0c0;
+        }
+        .modal-header h2 {
+            color: #bf6028;
+            font-size: 1.9rem;
+            letter-spacing: 1px;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 38px;
+            cursor: pointer;
+            color: #aa5a28;
+            transition: 0.2s;
+            line-height: 1;
+        }
+        .close-modal:hover {
+            transform: scale(1.1);
+            color: #d14514;
+        }
+        .modal-body {
+            padding: 32px 32px 38px;
+            text-align: center;
+        }
+        .photo-frame {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 6px solid #ffdaa0;
+            box-shadow: 0 18px 30px rgba(0, 0, 0, 0.25);
+            background: #f5e6c4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .wish-message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            line-height: 1.55;
+            color: #4a311c;
+            background: #fffcf0;
+            padding: 22px;
+            border-radius: 32px;
+            border-left: 8px solid #f7aa6a;
+            text-align: left;
+        }
+        .wish-message p {
+            margin-bottom: 14px;
+        }
+        .signature-modal {
+            margin-top: 20px;
+            font-style: italic;
+            color: #bd6a28;
+            text-align: right;
+            font-size: 1rem;
+        }
+        .footer-note {
+            font-size: 0.75rem;
+            margin-top: 22px;
+            color: #c88248;
+            text-align: center;
+            opacity: 0.85;
+        }
+        .photo-note {
+            font-size: 0.7rem;
+            margin-top: 12px;
+            color: #a0683a;
+            text-align: center;
+        }
+
+        /* ========= RESPONSIVE PARA TABLET Y MÓVIL ========= */
+        @media (max-width: 768px) {
+            .gift-img { 
+                max-width: 280px; 
+            }
+            .sunflower-img { 
+                max-width: 350px; 
+            }
+            .click-hint { 
+                font-size: 0.9rem; 
+                padding: 10px 20px; 
+                margin-top: 20px;
+            }
+            .open-letter-btn { 
+                padding: 10px 24px; 
+                font-size: 0.95rem; 
+            }
+            .sunflowers-bouquet {
+                padding: 30px 25px 30px 25px;
+            }
+            .modal-header h2 {
+                font-size: 1.4rem;
+            }
+            .modal-body {
+                padding: 20px 20px 30px;
+            }
+            .wish-message {
+                font-size: 1rem;
+                padding: 18px;
+            }
+            .photo-frame {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gift-img { 
+                max-width: 240px; 
+            }
+            .sunflower-img { 
+                max-width: 280px; 
+            }
+            .click-hint { 
+                font-size: 0.8rem; 
+                padding: 8px 16px;
+            }
+            .open-letter-btn { 
+                padding: 8px 20px; 
+                font-size: 0.85rem; 
+            }
+            .sunflowers-bouquet {
+                padding: 25px 20px 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="birthday-container">
+    <!-- Caja de regalo con imagen PNG -->
+    <div class="gift-box" id="giftBox">
+        <img class="gift-img" src="Regalo.png" alt="Caja de Regalo" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20280%20260%22%3E%3Crect%20width%3D%22280%22%20height%3D%22260%22%20fill%3D%22%23ea963c%22%2F%3E%3Ctext%20x%3D%22140%22%20y%3D%22130%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%20font-size%3D%2220%22%3ERegalo.png%3C%2Ftext%3E%3C%2Fsvg%3E'">
+    </div>
+    <div class="click-hint" id="hintMsg">✨ Toca la caja → ¡Confeti y ramo de girasoles! ✨</div>
+
+    <!-- Área sorpresa: RAMO DE GIRASOLES (imagen PNG única) -->
+    <div class="surprise-area" id="surpriseArea">
+        <div class="sunflowers-bouquet" id="bouquetSunflowers">
+            <img class="sunflower-img" src="Ramo de girasoles.png" alt="Ramo de Girasoles" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20width%3D%22400%22%20height%3D%22300%22%20fill%3D%22%23ddceaa%22%2F%3E%3Ctext%20x%3D%22200%22%20y%3D%22150%22%20text-anchor%3D%22middle%22%20fill%3D%22%238b5a2b%22%20font-size%3D%2220%22%3E🌻%20Ramo%20de%20girasoles%20🌻%3C%2Ftext%3E%3C%2Fsvg%3E'">
+        </div>
+        <button class="open-letter-btn" id="openLetterModalBtn">💌 Abrir la carta especial 💌</button>
+        <div class="footer-note">🌻 Haz clic en el ramo para verlo bailar 🌻</div>
+    </div>
+
+    <!-- MODAL DE LA CARTA (VENTANA APARTE CON FOTO) -->
+    <div class="modal-overlay" id="letterModal">
+        <div class="letter-modal">
+            <div class="modal-header">
+                <h2>✉️ Carta de cumpleaños 🌻</h2>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="photo-frame" id="photoFrame">
+                    <img id="photoDisplay" src="amor.jpg" alt="Foto especial" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20200%22%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2290%22%20fill%3D%22%23f5e6c4%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%22105%22%20text-anchor%3D%22middle%22%20fill%3D%22%239b4a22%22%20font-size%3D%2240%22%3E🌻%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="photo-note">📸 amor.jpg</div>
+                <div class="wish-message">
+                    <p>🎂 <strong>¡Feliz Cumpleaños Amor!</strong> 🎂</p>
+                    <p>​Al igual que los girasoles siguen al sol, tú iluminas mi vida cada día con tu luz y tu alegría. Hoy no es un día cualquiera; hoy se celebra el cumpleaños de la personita más maravillosa del mundo, una mujer de corazón gigante, con una paciencia que admiro profundamente y una calidez que me brinda una seguridad inmensa. Me enamora ver la pasión que le pones a todo lo que haces, ya sea en tu vida profesional donde lo das todo, como en cada instante que compartes a mi lado.</p>
+                    <p>​Sé que a veces tus días son intensos y cansados, pero hoy solo quiero que te relajes, te dejes consentir y disfrutes al máximo de este día tan especial. Que este nuevo año te devuelva multiplicada toda la bonita energía que entregas al mundo. Gracias por ser mi compañera y mi felicidad; te amo con todo mi corazón y te deseo el mejor de los cumpleaños. ¡Feliz vida, mi amor! 🌻✨🩺</p>
+                    <div class="signature-modal">Con todo el cariño del mundo,<br>✨ Alguien que te adora y admira ✨</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Elementos del DOM
+    const giftBox = document.getElementById('giftBox');
+    const surpriseZone = document.getElementById('surpriseArea');
+    const hintDiv = document.getElementById('hintMsg');
+    const openModalBtn = document.getElementById('openLetterModalBtn');
+    const modal = document.getElementById('letterModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const sunflowerImg = document.querySelector('.sunflower-img');
+
+    let boxOpened = false;
+
+    // ========= CONFETI EXPLOSIVO Y BONITO =========
+    function burstConfetiIntenso() {
+        const colors = ['#FFD700', '#FFA500', '#FF8C00', '#FFC125', '#FFB347', '#F4A460', '#E69A2A', '#FFD633'];
+        const icons = ['🌻', '✨', '🎉', '💖', '⭐', '🎊', '🌼', '💛'];
+        const cantidad = 160;
+        for (let i = 0; i < cantidad; i++) {
+            const conf = document.createElement('div');
+            if (Math.random() > 0.6) {
+                conf.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                conf.style.fontSize = (Math.random() * 30 + 18) + 'px';
+                conf.style.fontFamily = 'sans-serif';
+            } else {
+                conf.style.width = (Math.random() * 14 + 8) + 'px';
+                conf.style.height = (Math.random() * 14 + 8) + 'px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.borderRadius = '50%';
+                conf.style.opacity = '0.9';
+            }
+            conf.style.position = 'fixed';
+            conf.style.left = Math.random() * window.innerWidth + 'px';
+            conf.style.top = '-50px';
+            conf.style.pointerEvents = 'none';
+            conf.style.zIndex = '9999';
+            conf.style.transition = 'transform 1.5s ease-out, opacity 1.4s';
+            document.body.appendChild(conf);
+            const desplazX = (Math.random() - 0.5) * 380;
+            const desplazY = window.innerHeight + 100;
+            setTimeout(() => {
+                conf.style.transform = `translate(${desplazX}px, ${desplazY}px) rotate(${Math.random() * 720}deg)`;
+                conf.style.opacity = '0';
+            }, 15);
+            setTimeout(() => conf.remove(), 1600);
+        }
+        
+        // Corazones extra - MÁS LENTOS Y DURADEROS
+        for (let i=0;i<50;i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💛';
+            heart.style.position = 'fixed';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = Math.random() * window.innerHeight + 'px';
+            heart.style.fontSize = '28px';
+            heart.style.opacity = '1';
+            heart.style.transition = 'transform 10s, opacity 6.5s';  // MÁS LENTO
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '9998';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.style.transform = 'scale(2)';
+                heart.style.opacity = '0';
+            }, 2000);  // ESPERA UN POCO
+            setTimeout(() => heart.remove(), 40000);  // DURA 4 SEGUNDOS
+        }
+    }
+
+    // Abrir caja: muestra ramo de girasoles y confeti
+    function openGift() {
+        if (boxOpened) return;
+        boxOpened = true;
+        surpriseZone.classList.add('open');
+        hintDiv.innerHTML = '🎉🌻 ¡BOOM! Confeti y hermoso ramo de girasoles 🌻🎉<br> Ahora abre la carta con el botón de abajo 💌';
+        hintDiv.style.background = "#fff4e0";
+        giftBox.style.opacity = "0.85";
+        giftBox.style.filter = "drop-shadow(0 18px 20px rgba(0,0,0,0.25))";
+        giftBox.style.cursor = "default";
+        burstConfetiIntenso();
+        
+        // Animación de entrada del ramo
+        const bouquet = document.querySelector('.sunflowers-bouquet');
+        if (bouquet) {
+            bouquet.style.animation = "none";
+            setTimeout(() => {
+                bouquet.style.animation = "gentleRise 0.6s ease";
+            }, 10);
+            setTimeout(() => {
+                if (bouquet) bouquet.style.animation = "";
+            }, 700);
+        }
+    }
+
+    // Modal de la carta (ventana aparte)
+    function showLetterModal() {
+        if (!boxOpened) {
+            hintDiv.innerHTML = '🎁 ¡Primero abre la caja de regalo para que aparezcan los girasoles y la carta! 🎁';
+            setTimeout(() => {
+                if (!boxOpened) hintDiv.innerHTML = '✨ Toca la caja → ¡Confeti y ramo de girasoles! ✨';
+                else hintDiv.innerHTML = '🎉🌻 ¡BOOM! Confeti y hermoso ramo de girasoles 🌻🎉<br> Ahora abre la carta con el botón de abajo 💌';
+            }, 2200);
+            return;
+        }
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    // Event listeners
+    giftBox.addEventListener('click', openGift);
+    openModalBtn.addEventListener('click', showLetterModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Interacción con el ramo de girasoles (al hacer clic baila)
+    if (sunflowerImg) {
+        sunflowerImg.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sunflowerImg.style.animation = 'none';
+            setTimeout(() => sunflowerImg.style.animation = 'floatSunflower 0.5s ease-in-out', 5);
+            setTimeout(() => sunflowerImg.style.animation = 'floatSunflower 4s infinite ease-in-out', 500);
+        });
+    }
+
+    // Keyframes extra para entrada del ramo
+    const styleAnim = document.createElement('style');
+    styleAnim.textContent = `
+        @keyframes gentleRise {
+            0% { opacity: 0; transform: scale(0.92) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    `;
+    document.head.appendChild(styleAnim);
+    surpriseZone.classList.remove('open');
+</script>
+</body>
+</html>
